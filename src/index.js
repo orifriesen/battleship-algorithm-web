@@ -3,32 +3,20 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import 'fontsource-roboto';
 
-function Square(props) {
+var boardSize = 10
+
+function Square() {
     return (
-        <button className="square" onClick = {props.onClick}>
-        {props.value}
-        </button>
+        <span className="square">
+        </span>
     );
 }
 
-function calculateWinner(squares) {
-    const lines = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-    ];
-    for(let i = 0; i < lines.length; i++) {
-        const [a, b, c] = lines[i];
-        if(squares[a] && squares [a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
-        }
-    }
-    return null;
+function SunkSquare() {
+    return (
+        <span className="sunkSquare">
+        </span>
+    );
 }
   
 class Board extends React.Component {
@@ -36,43 +24,28 @@ class Board extends React.Component {
         super(props);
         this.state = {
             squares: Array(9).fill(null),
-            xIsNext: true,
         };
-    }
-
-    handleClick(i) {
-        const squares = this.state.squares.slice();
-        if(calculateWinner(squares) || squares[i]) {
-            return;
-        }
-        squares[i] = this.state.xIsNext ? 'X' : 'O';
-        this.setState({
-            squares: squares,
-            xIsNext: !this.state.xIsNext,
-        });
     }
 
     renderSquare(i) {
         return <Square 
             value = {this.state.squares[i]}
-            onClick = {() => this.handleClick(i)}
         />;
     }
+
+    renderSunkSquare(i) {
+        return <SunkSquare 
+            value = {this.state.squares[i]}
+        />;
+    }
+
     render() {
-        const winner = calculateWinner(this.state.squares);
-        let status;
-        if(winner) {
-            status = 'Winner: ' + winner;
-        } else {
-            status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-        }
         return (
         <div>
-            <div className="status">{status}</div>
             <div className="board-row">
-            {this.renderSquare(0)}
-            {this.renderSquare(1)}
-            {this.renderSquare(2)}
+            {this.renderSunkSquare(0)}
+            {this.renderSunkSquare(1)}
+            {this.renderSunkSquare(2)}
             </div>
             <div className="board-row">
             {this.renderSquare(3)}
@@ -89,16 +62,13 @@ class Board extends React.Component {
     }
 }
 
-class ShipInput extends React.Component {
-    render(value) {
-        return (
-            <div>
-                <h2>Ship {value}:</h2>
-                <label>Size: </label>
-                <input type="number"/><br/><br/>
-            </div>
-        )
-    }
+function ShipInput(props) {
+    return (
+        <div align="right">
+            <h2 style={{fontSize:18, display: 'inline-block', fontWeight: 500}} paddingLeft="8">Ship {props.value}:</h2>
+            <input type="number" class="uk-input" style={{width:88, marginLeft: 8}} min="0" placeholder="Length" min="1"/>
+        </div>
+    )
 }
 
 class GetShips extends React.Component {
@@ -118,41 +88,80 @@ class GetShips extends React.Component {
     }
 
     removeShip(event) {
-        this.setState({numberOfShips: this.state.numberOfShips-1});
-        this.state.shipInputs.pop(<ShipInput value = {this.state.numberOfShips}/>)
+        if (this.state.numberOfShips >= 1) {
+            this.setState({numberOfShips: this.state.numberOfShips-1});
+            this.state.shipInputs.pop(<ShipInput value = {this.state.numberOfShips}/>)
+        }
     }
 
     render() {
         return (
             <div>
-                <button type="button" onClick={this.addShip}>Add Ship</button>
-                <button type="button" onClick={this.removeShip}>Remove Ship</button>
-                <div>{this.state.shipInputs}</div>
+                <h4 class="uk-heading-line uk-text-center">
+                    <span>
+                        Ship List  <span style={{padding: 16}}><button type="button" onClick={this.addShip} class="uk-button uk-button-default"><span uk-icon="plus"></span></button>
+                                    <button type="button" onClick={this.removeShip} class="uk-button uk-button-default"><span uk-icon="minus"></span></button></span>
+                    </span>
+                </h4>
+                <div align="center">{this.state.shipInputs}</div>
             </div>
         )
     }
+}
+
+function GameInputs() {
+    return(
+        <div style={{maxWidth:500}}>
+            <h4 class="uk-heading-line uk-text-center">
+                <span>
+                    Board Size
+                </span>
+            </h4>
+            <div class="uk-text-center uk-grid-medium" uk-grid>
+                <div class="uk-width-1-4" style={{display: "inline-block"}}>
+                    <input class="uk-input" id="boardSizeInput" type="number" min="10" max="50" placeholder="Value" style={{display: "inline-block"}} onInput={changedInput}/>
+                </div>
+                <div class="uk-width-3-4" style={{display: "inline-block"}}>
+                    <input class="uk-range" id="boardSizeSlider" type="range" min="10" max="50" style={{display: "inline-block"}} onInput={changedSlider}/>
+                </div>
+            </div>
+            <br/>
+            <GetShips/>
+            <button class="uk-button uk-button-default">Start Algorithm</button>
+        </div>
+    );
+}
+
+function changedInput() {
+    boardSize = Number(document.getElementById("boardSizeInput")["value"])
+    document.getElementById("boardSizeSlider").value = boardSize
+}
+
+function changedSlider() {
+    boardSize = Number(document.getElementById("boardSizeSlider")["value"])
+    document.getElementById("boardSizeInput").value = boardSize
 }
 
 class Game extends React.Component {
     render() {
         return (
             <html>
-                <div>
-                    <div align="center">
+                <div align="center">
+                    <div align="center" style={{marginBottom: 64}}>
                         <h3 style = {{paddingTop: 20, fontSize: 32, fontFamily: "Roboto", fontWeight: 4, color: 'GrayText', lineHeight: 0}}>Battleship Algorithm</h3>
                         <h3 style = {{fontSize: 16, fontFamily: "Roboto", fontWeight: 4, color: 'lightgray', lineHeight: 0}}>By Ori Friesen</h3>
                     </div>
-                    <div className="game" align = "left">
-                        <div className="game-board">
-                        <Board />
+                    <div style={{maxWidth: 2000}}>
+                        <div align="center">
+                            <div align="center" style={{paddingRight: 1000}}>
+                                <Board/>
+                            </div>
                         </div>
-                        <div className="game-info">
-                        <div>{/* status */}</div>
-                        <ol>{/* TODO */}</ol>
+                        <div align="center" style={{paddingLeft: 500, maxWidth: 500, marginTop: -133}}>
+                            <GameInputs/>
                         </div>
                     </div>
                 </div>
-                <GetShips/>
             </html>
         );
     }
