@@ -35,7 +35,7 @@ body {
   }
   
   .hitSquare {
-    background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 48%, black 48%,  black 54%,transparent 54%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 48%, black 48%,  black 54%,transparent 54%, transparent 100%);
+    background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 48%, black 48%,  black 54%,transparent 54%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 48%, black 48%,  black 54%,transparent 54%, transparent 100%), lightgray;
     outline: 1px solid black;
     float: left;
     padding: 0;
@@ -43,7 +43,15 @@ body {
   }
 
   .sunkSquare {
-    background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 48%, red 48%,  red 54%,transparent 54%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 48%, red 48%,  red 54%,transparent 54%, transparent 100%);
+    background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 48%, red 48%,  red 54%,transparent 54%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 48%, red 48%,  red 54%,transparent 54%, transparent 100%), lightgray;
+    outline: 1px solid black;
+    float: left;
+    padding: 0;
+    height: 100%;
+  }
+
+  .shipSquare {
+    background: lightgray;
     outline: 1px solid black;
     float: left;
     padding: 0;
